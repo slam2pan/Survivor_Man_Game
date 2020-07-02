@@ -12,6 +12,7 @@ public class CharacterController : MonoBehaviour
     private bool isGrounded = true;
     private int maxHealth = 5;
     private int health = 5;
+    private int hitRange = 1;
 
     private float timeInvincible = 2.0f;
     private bool isInvincible = false;
@@ -63,6 +64,17 @@ public class CharacterController : MonoBehaviour
         {
             transform.Translate(Vector2.right * moveSpeed * Time.deltaTime);
             Flip(false);
+        }
+
+        // Attack
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            anim.SetTrigger("isAttacking");
+        }
+        // Continuous attack damage
+        if (this.anim.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
+        {
+            Attack();
         }
 
         // Invincible timer to taking damage (need to add animation)
@@ -134,5 +146,23 @@ public class CharacterController : MonoBehaviour
     public int GetHealth()
     {
         return health;
+    }
+
+    // Destroy object if player hits it
+    private void Attack()
+    {
+        RaycastHit2D hit;
+        LayerMask layerMask = 9; // ignore player
+        Vector2 forward = new Vector2(-transform.localScale.x, 0);
+        Vector2 origin = transform.position;
+
+        if (hit = Physics2D.Raycast(origin, forward, hitRange, layerMask))
+        {
+            Debug.Log(hit.transform.gameObject);
+            if (hit.transform.gameObject.CompareTag("Damage"))
+            {
+                Destroy(hit.transform.gameObject);
+            }
+        }
     }
 }
