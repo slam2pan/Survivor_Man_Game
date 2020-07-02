@@ -18,20 +18,15 @@ public class SpawnManager : MonoBehaviour
             // Spawn Enemy above ground
             int enemyNum = Random.Range(0, enemies.Count);
             Vector2 enemyPos = new Vector2(Random.Range(-5.0f, 7.0f), 4);
-            RaycastHit2D hit = Physics2D.Raycast(enemyPos, Vector2.down, 50.0f);
-            if (hit.collider == null)
+            RaycastHit2D hit = Physics2D.Raycast(enemyPos, Vector2.down, 10.0f);
+            /* if (hit.collider == null)
             {
                 i--;
                 continue;   // redo spawn if enemy could not be placed
-            }
+            } */
             enemyPos.y = hit.point.y;
             Instantiate(enemies[enemyNum], enemyPos + new Vector2(0, 1), Quaternion.identity);
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

@@ -13,16 +13,9 @@ public class Teleport : MonoBehaviour
         levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        Debug.Log("yup");
-        if (other.gameObject.CompareTag("Player"))
+        if (collision.gameObject.CompareTag("Player"))
         {
             levelManager.whatLevel++;
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);

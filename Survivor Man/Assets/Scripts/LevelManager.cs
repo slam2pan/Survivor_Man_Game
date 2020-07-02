@@ -1,10 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
-    [SerializeField] private static int level = 2;
+    private static int level = 0;
+
+    TextMeshProUGUI levelText;
+    private static LevelManager levelInstance;
+    CharacterController characterController;
 
     public int whatLevel
     {
@@ -12,11 +18,41 @@ public class LevelManager : MonoBehaviour
         set { level = value; }
     }
 
-    // Start is called before the first frame update
-    void Start()
+    // Ensure only one levelmanager exists
+    private void Awake()
     {
         DontDestroyOnLoad(this);
+        if (levelInstance == null)
+        {
+            levelInstance = this;
+        } else
+        {
+            Destroy(this.gameObject);
+        }
+
+        SetLevelText();
     }
 
+    // Lose and restart if player runs out of health
+    private void Update()
+    {
+        characterController = GameObject.FindGameObjectWithTag("Player").GetComponent<CharacterController>();
+        if (characterController.GetHealth() == 0)
+        {
+            whatLevel = 0;
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            Debug.Log("You lose");
+        }
+    }
 
+    private void OnLevelWasLoaded()
+    {
+        SetLevelText();
+    }
+
+    void SetLevelText()
+    {
+        levelText = GameObject.Find("LevelText").GetComponent<TextMeshProUGUI>();
+        levelText.SetText("Level " + level);
+    }
 }

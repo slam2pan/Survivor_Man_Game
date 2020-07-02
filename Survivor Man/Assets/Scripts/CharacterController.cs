@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class CharacterController : MonoBehaviour
@@ -7,10 +9,17 @@ public class CharacterController : MonoBehaviour
     float horizontalInput;
     private float moveSpeed = 4;
     private float jumpForce = 12;
-    public bool isGrounded = true;
+    private bool isGrounded = true;
+    private int maxHealth = 5;
+    private int health = 5;
+
+    private float timeInvincible = 2.0f;
+    private bool isInvincible = false;
+    private float invincibleTimer;
 
     private Rigidbody2D playerRb;
     private Animator anim;
+    [SerializeField] TextMeshProUGUI healthText;
 
     // Start is called before the first frame update
     void Start()
@@ -32,8 +41,16 @@ public class CharacterController : MonoBehaviour
         {
             anim.Play("Jump");
             playerRb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-            isGrounded = false;
             anim.SetBool("isGrounded", true);
+        }
+
+        // Crouching
+        if (Input.GetKey(KeyCode.S))
+        {
+            anim.SetBool("isCrouching", true);
+        } else
+        {
+            anim.SetBool("isCrouching", false);
         }
 
         // Change look direction
@@ -47,11 +64,25 @@ public class CharacterController : MonoBehaviour
             transform.Translate(Vector2.right * moveSpeed * Time.deltaTime);
             Flip(false);
         }
+
+        // Invincible timer to taking damage (need to add animation)
+        if (isInvincible)
+        {
+            invincibleTimer -= Time.deltaTime;
+            if (invincibleTimer < 0)
+            {
+                isInvincible = false;
+            }
+        }
     }
 
     private void FixedUpdate()
     {
-        transform.Translate(Vector2.right * horizontalInput * moveSpeed * Time.deltaTime);
+        // Don't allow character to move if he is crouching
+        if (!anim.GetBool("isCrouching"))
+        {
+            transform.Translate(Vector2.right * horizontalInput * moveSpeed * Time.deltaTime);
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -62,6 +93,21 @@ public class CharacterController : MonoBehaviour
         }
     }
 
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Damage"))
+        {
+            ChangeHealth(-1);
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = false;
+        }
+    }
 
     // Decides which direction the swordsman should look
     void Flip(bool lookLeft)
@@ -69,5 +115,24 @@ public class CharacterController : MonoBehaviour
         transform.localScale = new Vector3(lookLeft ? 1 : -1, 1, 1);
     }
 
+    private void ChangeHealth(int amount)
+    {
+        if (amount < 0)
+        {
+            if (isInvincible)
+            {
+                return;
+            }
+            isInvincible = true;
+            invincibleTimer = timeInvincible;
+        }
 
+        health = Mathf.Clamp(health + amount, 0, maxHealth);
+        healthText.SetText("Health: " + health);
+    }
+
+    public int GetHealth()
+    {
+        return health;
+    }
 }
