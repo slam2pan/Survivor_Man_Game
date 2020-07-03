@@ -33,15 +33,15 @@ public class LevelManager : MonoBehaviour
         SetLevelText();
     }
 
-    // Lose and restart if player runs out of health
+    // Lose and take player to game over scene
     private void Update()
     {
         characterController = GameObject.FindGameObjectWithTag("Player").GetComponent<CharacterController>();
         if (characterController.GetHealth() == 0)
         {
             whatLevel = 0;
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-            Debug.Log("You lose");
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            Destroy(this.gameObject); // Reset game
         }
     }
 
