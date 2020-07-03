@@ -5,6 +5,14 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
+    [SerializeField] AudioClip buttonClick;
+    private AudioSource menuAudio;
+
+    private void Start()
+    {
+        menuAudio = GetComponent<AudioSource>();    
+    }
+
     public void PlayGame()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
@@ -15,5 +23,9 @@ public class MainMenu : MonoBehaviour
         Application.Quit();
     }
 
+    public void clickAudio()
+    {
+        menuAudio.PlayOneShot(buttonClick);
+    }
 
 }

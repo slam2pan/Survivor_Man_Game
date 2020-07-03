@@ -9,6 +9,7 @@ public class LevelManager : MonoBehaviour
     private static int level = 0;
 
     TextMeshProUGUI levelText;
+    TextMeshProUGUI instructionsText;
     private static LevelManager levelInstance;
     CharacterController characterController;
 
@@ -53,6 +54,14 @@ public class LevelManager : MonoBehaviour
     void SetLevelText()
     {
         levelText = GameObject.Find("LevelText").GetComponent<TextMeshProUGUI>();
+        instructionsText = GameObject.Find("Instructions").GetComponent<TextMeshProUGUI>();
         levelText.SetText("Level " + level);
+        if (whatLevel == 0)
+        {
+            instructionsText.enabled = true;
+        } else
+        {
+            instructionsText.enabled = false;
+        }
     }
 }

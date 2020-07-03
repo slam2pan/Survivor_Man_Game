@@ -22,11 +22,17 @@ public class CharacterController : MonoBehaviour
     private Animator anim;
     [SerializeField] TextMeshProUGUI healthText;
 
+    private AudioSource playerAudio;
+    [SerializeField] AudioClip hurtSound;
+    [SerializeField] AudioClip jumpSound;
+    [SerializeField] AudioClip attackSound;
+
     // Start is called before the first frame update
     void Start()
     {
         playerRb = GetComponent<Rigidbody2D>();
         anim = this.transform.Find("Player").GetComponent<Animator>();
+        playerAudio = GetComponent<AudioSource>();
         Flip(false);
     }
 
@@ -41,6 +47,7 @@ public class CharacterController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             anim.Play("Jump");
+            playerAudio.PlayOneShot(jumpSound);
             playerRb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             anim.SetBool("isGrounded", true);
         }
@@ -70,6 +77,7 @@ public class CharacterController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E))
         {
             anim.SetTrigger("isAttacking");
+            playerAudio.PlayOneShot(attackSound);
         }
         // Continuous attack damage
         if (this.anim.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
@@ -137,6 +145,7 @@ public class CharacterController : MonoBehaviour
             }
             isInvincible = true;
             invincibleTimer = timeInvincible;
+            playerAudio.PlayOneShot(hurtSound);
         }
 
         health = Mathf.Clamp(health + amount, 0, maxHealth);
@@ -158,7 +167,6 @@ public class CharacterController : MonoBehaviour
 
         if (hit = Physics2D.Raycast(origin, forward, hitRange, layerMask))
         {
-            Debug.Log(hit.transform.gameObject);
             if (hit.transform.gameObject.CompareTag("Damage"))
             {
                 Destroy(hit.transform.gameObject);
